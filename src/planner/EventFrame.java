@@ -4,9 +4,14 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -35,16 +40,25 @@ public class EventFrame {
 	private JComboBox dayCB;
 	private JComboBox hourCB;
 	private JComboBox minCB;
+	private String storedDate;
 
 	private JRadioButton radioAM;
 	private JRadioButton radioPM;
+	private String storedTime;
+
+	private JLabel lblEvent;
+	private JTextField evtTitle;
+	private String storedTitle;
+
+	private JLabel lblDescription;
+	private JTextField evtDetails;
+	private String storedDetails;
 
 	private JButton confirmBtn;
 	private JButton clearBtn;
-
-	private JLabel lblEvent;
-	private JTextField evtText;
-	private static String storedText;
+	
+	private Map<String,String> eventMap;
+	// stored info into map
 
 	/**
 	 * Launch the application.
@@ -79,6 +93,7 @@ public class EventFrame {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 
+		// arrays for the drop down list selections
 		Integer[] month = new Integer[12];
 		int monthCounter = 1;
 		int monthIndex = 0;
@@ -105,6 +120,13 @@ public class EventFrame {
 		}
 		SpringLayout springLayout = new SpringLayout();
 		frame.getContentPane().setLayout(springLayout);
+		
+		
+		
+		
+		
+		// set default to current time // need to learn
+		// get index == that
 
 		lblMonth = new JLabel("Month: ");
 		springLayout.putConstraint(SpringLayout.NORTH, lblMonth, 32,
@@ -158,6 +180,16 @@ public class EventFrame {
 		springLayout.putConstraint(SpringLayout.WEST, minCB, 6, SpringLayout.EAST,
 				hourCB);
 		frame.getContentPane().add(minCB);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		radioAM = new JRadioButton("AM");
 		springLayout.putConstraint(SpringLayout.NORTH, radioAM, -4,
@@ -173,10 +205,105 @@ public class EventFrame {
 				SpringLayout.EAST, radioAM);
 		frame.getContentPane().add(radioPM);
 
+		storedTime = "";
+		// select either AM or PM, not both.
+		ButtonGroup group = new ButtonGroup();
+		group.add(radioAM);
+		group.add(radioPM);
+
+		radioAM.addItemListener(new ItemHandler());
+		radioPM.addItemListener(new ItemHandler());
+
+		
+		
+		
+		
+		
+		
+		
+		
+
+		lblEvent = new JLabel("Event Title:");
+		springLayout.putConstraint(SpringLayout.WEST, lblEvent, 0,
+				SpringLayout.WEST, lblMonth);
+		frame.getContentPane().add(lblEvent);
+
+		evtTitle = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, evtTitle, 136,
+				SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, lblEvent, -6,
+				SpringLayout.NORTH, evtTitle);
+
+		// evtTitle.setText("-");
+		// still has a problem with this
+		// evtText.setValue(new String("Event")); for formattedTF
+		// change it whenever the box has changed the text changes together?
+		// evtTitle.addPropertyChangeListener(new PropertyChangeListener() {
+		// public void propertyChange(PropertyChangeEvent e) {
+		// storedTitle = evtTitle.getText();
+		// //storedText = evtText.getValue().toString(); //for formattedTF
+		// }
+		// });
+
+		springLayout.putConstraint(SpringLayout.WEST, evtTitle, 0,
+				SpringLayout.WEST, lblMonth);
+		springLayout.putConstraint(SpringLayout.EAST, evtTitle, 0,
+				SpringLayout.EAST, radioPM);
+		frame.getContentPane().add(evtTitle);
+
+		lblDescription = new JLabel("Description:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblDescription, 16,
+				SpringLayout.SOUTH, evtTitle);
+		springLayout.putConstraint(SpringLayout.WEST, lblDescription, 0,
+				SpringLayout.WEST, lblMonth);
+		frame.getContentPane().add(lblDescription);
+
+		evtDetails = new JTextField();
+		evtDetails.setText("-");
+		springLayout.putConstraint(SpringLayout.NORTH, evtDetails, 6,
+				SpringLayout.SOUTH, lblDescription);
+		springLayout.putConstraint(SpringLayout.WEST, evtDetails, 0,
+				SpringLayout.WEST, lblMonth);
+		springLayout.putConstraint(SpringLayout.EAST, evtDetails, 0,
+				SpringLayout.EAST, radioPM);
+		// evtDetails.addPropertyChangeListener(new PropertyChangeListener() {
+		// public void propertyChange(PropertyChangeEvent e) {
+		// storedDetails = evtDetails.getText();
+		// // storedText = evtText.getValue().toString(); for formattedTF
+		// }
+		// });
+		frame.getContentPane().add(evtDetails);
+		
+		
+		
+		
+		
+
+		
+		eventMap = new HashMap<>();
+		
+		// confirm button to save all the inputs from the buttons/boxes above
+		// !!need to make this work
 		confirmBtn = new JButton("Confirm");
 		confirmBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				save();
+				storedTitle = evtTitle.getText();
+				storedDetails = evtDetails.getText();
+				storedDate = monthCB.getSelectedItem().toString() + "/" +
+						dayCB.getSelectedItem().toString() + " " +
+						hourCB.getSelectedItem().toString() + ":" +
+						minCB.getSelectedItem().toString() + storedTime;
+				
+				
+				if(storedDate != null)
+					eventMap.put(storedDate, storedTitle + " " + storedDetails);
+				System.out.println(eventMap.toString());
+				System.out.print(storedTitle + " ");
+				System.out.println(storedDetails + " ");
+				System.out.println(storedDate + " " + storedTime);
+				frame.dispose();
+				
+				// figure out how to add a preview in the main frame
 			}
 		});
 		springLayout.putConstraint(SpringLayout.SOUTH, confirmBtn, -10,
@@ -195,36 +322,24 @@ public class EventFrame {
 		springLayout.putConstraint(SpringLayout.SOUTH, clearBtn, -10,
 				SpringLayout.SOUTH, frame.getContentPane());
 		frame.getContentPane().add(clearBtn);
-
-		lblEvent = new JLabel("Event :");
-		springLayout.putConstraint(SpringLayout.WEST, lblEvent, 0,
-				SpringLayout.WEST, lblMonth);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblEvent, -133,
-				SpringLayout.SOUTH, frame.getContentPane());
-		frame.getContentPane().add(lblEvent);
-
-		evtText = new JTextField();
-		evtText.setText("Event");
-		// evtText.setValue(new String("Event")); for formattedTF
-		evtText.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent e) {
-				storedText = evtText.getText();
-				// storedText = evtText.getValue().toString(); for formattedTF
-			}
-		});
-
-		springLayout.putConstraint(SpringLayout.NORTH, evtText, 7,
-				SpringLayout.SOUTH, lblEvent);
-		springLayout.putConstraint(SpringLayout.WEST, evtText, 0,
-				SpringLayout.WEST, lblMonth);
-		springLayout.putConstraint(SpringLayout.EAST, evtText, 0,
-				SpringLayout.EAST, radioPM);
-		frame.getContentPane().add(evtText);
+		
 	}
 
-	private void save() {
-		// frame.dispose();
-		// AppFrame.addLines();
-		JOptionPane.showMessageDialog(null, storedText);
+	private class ItemHandler implements ItemListener {
+		public void itemStateChanged(ItemEvent arg0) {
+			if (radioAM.isSelected())
+				storedTime = "AM";
+			else if (radioPM.isSelected())
+				storedTime = "PM";
+
+			// System.out.println(time);
+			// somehow store the time somewhere
+		}
 	}
+
+	// private void save() {
+	// frame.dispose();
+	// AppFrame.addLines();
+	// JOptionPane.showMessageDialog(null, storedTitle);
+	// }
 }

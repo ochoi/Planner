@@ -94,9 +94,4 @@ public class AppFrame {
 		});
 		frame.getContentPane().add(AddEventButton);
 	}
-	
-//	public static void addLines() {
-//		JLabel text = new JLabel();
-//		text.setText("");
-//	}
 }
