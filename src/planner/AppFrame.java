@@ -11,6 +11,10 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import java.awt.Color;
@@ -23,14 +27,19 @@ import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.CardLayout;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTable;
+import java.awt.TextArea;
+import javax.swing.JEditorPane;
 
 /*
  * The main frame for the planner application.
@@ -93,5 +102,30 @@ public class AppFrame {
 			}
 		});
 		frame.getContentPane().add(AddEventButton);
+
+		JTextPane textPane = new JTextPane();
+		textPane.setBackground(Color.WHITE);
+		textPane.setEditable(false);
+		textPane.setBounds(30, 100, 320, 230);
+		frame.getContentPane().add(textPane);
+
+		String fileName = "event.txt";
+		String line = null;
+		String result = "";
+
+		try {
+			FileReader fileReader = new FileReader(fileName);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			while ((line = bufferedReader.readLine()) != null) {
+				result = result + line + "\n";
+			}
+			bufferedReader.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File Not Found");
+		} catch (IOException e) {
+			System.out.println("IO error");
+		}
+
+		textPane.setText(result);
 	}
 }
