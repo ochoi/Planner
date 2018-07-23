@@ -10,14 +10,22 @@ import javax.swing.JPanel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import net.miginfocom.swing.MigLayout;
@@ -40,6 +48,7 @@ import javax.swing.JTextPane;
 import javax.swing.JTable;
 import java.awt.TextArea;
 import javax.swing.JEditorPane;
+import javax.swing.SpringLayout;
 
 /*
  * The main frame for the planner application.
@@ -48,6 +57,14 @@ import javax.swing.JEditorPane;
 public class AppFrame {
 
 	private JFrame frame;
+	private JLabel titleLabel;
+	private JButton AddEventButton;
+
+	private JScrollPane scrollPane;
+	private JPanel panel;
+	private JCheckBox checkBox;
+	private static final int COLS = 1;
+	private int rows;
 
 	/**
 	 * Launch the application.
@@ -72,6 +89,18 @@ public class AppFrame {
 		initialize();
 	}
 
+	private class ItemHandler implements ItemListener {
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			JCheckBox selected = (JCheckBox) e.getSource();
+			panel.remove(selected);
+			panel.revalidate();
+			panel.repaint();
+			// selected.getName()
+			// remove a line in a file
+		}
+	}
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -83,7 +112,7 @@ public class AppFrame {
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setLayout(null);
 
-		JLabel titleLabel = new JLabel("Planner");
+		titleLabel = new JLabel("Planner");
 		titleLabel.setBounds(30, 30, 78, 33);
 		frame.getContentPane().add(titleLabel);
 		titleLabel.setBackground(Color.WHITE);
@@ -91,7 +120,7 @@ public class AppFrame {
 		titleLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
 
 		// Brings up a new frame to ask for inputs
-		JButton AddEventButton = new JButton("Add Event");
+		AddEventButton = new JButton("Add Event");
 		AddEventButton.setBounds(260, 30, 90, 33);
 		AddEventButton.setForeground(new Color(255, 102, 153));
 		AddEventButton.setBackground(new Color(245, 245, 245));
@@ -103,11 +132,23 @@ public class AppFrame {
 		});
 		frame.getContentPane().add(AddEventButton);
 
-		JTextPane textPane = new JTextPane();
-		textPane.setBackground(Color.WHITE);
-		textPane.setEditable(false);
-		textPane.setBounds(30, 100, 320, 230);
-		frame.getContentPane().add(textPane);
+		// A preview text pane for all the events stored
+		// JTextPane textPane = new JTextPane();
+		// textPane.setBackground(Color.WHITE);
+		// textPane.setEditable(false);
+		// textPane.setBounds(30, 100, 320, 230);
+		// frame.getContentPane().add(textPane);
+
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(30, 100, 320, 230);
+		frame.getContentPane().add(scrollPane);
+
+		panel = new JPanel();
+		//panel.setBackground(new Color(255, 204, 204));
+		scrollPane.setViewportView(panel);
+		panel.setLayout(new GridLayout(rows, COLS));
+		// scrollPane.setPreferredSize(new Dimension(320,230));
+		//panel.setLayout(new GridLayout(1, 0)); //to use design tab
 
 		String fileName = "event.txt";
 		String line = null;
@@ -117,7 +158,11 @@ public class AppFrame {
 			FileReader fileReader = new FileReader(fileName);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
 			while ((line = bufferedReader.readLine()) != null) {
-				result = result + line + "\n";
+				checkBox = new JCheckBox(" " + line);
+				checkBox.addItemListener(new ItemHandler());
+				rows++;
+				panel.add(checkBox);
+				// result = result + line + "\n";
 			}
 			bufferedReader.close();
 		} catch (FileNotFoundException e) {
@@ -125,7 +170,12 @@ public class AppFrame {
 		} catch (IOException e) {
 			System.out.println("IO error");
 		}
+		// only works if all the components that panel has are check boxes?
 
-		textPane.setText(result);
+		// textPane.setText(result);
+		// think about using Jtable? or something to add checkboxes and set
+		// the scrolling size.
+		// deleting selected checkbox and update the file by rewriting to it
+		// might be inefficient..
 	}
 }

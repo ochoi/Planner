@@ -248,7 +248,7 @@ public class EventFrame {
 		
 		
 		
-		
+		// add function: if the boxes are empty, can't press confirm, dialog box
 
 		confirmBtn = new JButton("Confirm");
 		confirmBtn.addActionListener(new ActionListener() {
@@ -283,7 +283,6 @@ public class EventFrame {
 				SpringLayout.EAST, frame.getContentPane());
 		frame.getContentPane().add(confirmBtn);
 
-		// figure out how to add a preview in the main frame
 		// figure out how to overwrite one or more data inputs
 		// (if date and time the same but details different, append the details
 		// on the same line as the date and time?)
