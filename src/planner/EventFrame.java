@@ -274,6 +274,8 @@ public class EventFrame {
 				}
 
 				frame.dispose();
+				AppFrame hi = new AppFrame();
+				hi.update();
 			}
 		});
 
@@ -318,5 +320,6 @@ public class EventFrame {
 		}
 	}
 
+	
 	// JOptionPane.showMessageDialog(null, storedTitle);
 }

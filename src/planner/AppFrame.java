@@ -16,8 +16,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
@@ -93,11 +96,45 @@ public class AppFrame {
 		@Override
 		public void itemStateChanged(ItemEvent e) {
 			JCheckBox selected = (JCheckBox) e.getSource();
+
+			// ignore the space at index 0
+			String lineToRemove = selected.getText().substring(1);
 			panel.remove(selected);
 			panel.revalidate();
 			panel.repaint();
-			// selected.getName()
-			// remove a line in a file
+
+			String currentLine = null;
+
+			// read from the original event.txt, write to a tempFile
+			// skip the line that matches the one looking for
+			// delete the original, rename the tempFile to the original
+			File readFile = new File("event.txt");
+			File tempFile = new File("tempFile.txt");
+			try {
+				FileReader fileReader = new FileReader(readFile);
+				BufferedReader reader = new BufferedReader(fileReader);
+
+				FileWriter fileWriter = new FileWriter(tempFile);
+				BufferedWriter writer = new BufferedWriter(fileWriter);
+
+				while ((currentLine = reader.readLine()) != null) {
+					if (currentLine.equals(lineToRemove))
+						continue;
+					writer.write(currentLine + System.getProperty("line.separator"));
+
+				}
+				writer.close();
+				reader.close();
+				readFile.delete();
+				boolean successful = tempFile.renameTo(readFile);
+				System.out.println(successful);
+
+			} catch (FileNotFoundException e1) {
+				System.out.println("File Not Found");
+			} catch (IOException e1) {
+				System.out.println("IO Exception");
+			}
+
 		}
 	}
 
@@ -144,11 +181,11 @@ public class AppFrame {
 		frame.getContentPane().add(scrollPane);
 
 		panel = new JPanel();
-		//panel.setBackground(new Color(255, 204, 204));
+		// panel.setBackground(new Color(255, 204, 204));
 		scrollPane.setViewportView(panel);
 		panel.setLayout(new GridLayout(rows, COLS));
 		// scrollPane.setPreferredSize(new Dimension(320,230));
-		//panel.setLayout(new GridLayout(1, 0)); //to use design tab
+		// panel.setLayout(new GridLayout(1, 0)); //to use design tab
 
 		String fileName = "event.txt";
 		String line = null;
@@ -177,5 +214,11 @@ public class AppFrame {
 		// the scrolling size.
 		// deleting selected checkbox and update the file by rewriting to it
 		// might be inefficient..
+	}
+	
+	public void update() {
+		frame.setVisible(true);
+		frame.revalidate();
+		frame.repaint();
 	}
 }
